@@ -3,7 +3,11 @@ const mongoose = require("mongoose");
 async function connect() {
   try {
     await mongoose.connect(
-      "mongodb+srv://kien:kien@cluster0.362pnra.mongodb.net/f8_education_dev"
+      "mongodb+srv://kien:kien@cluster0.362pnra.mongodb.net/f8_education_dev",
+      {
+        useNewUrlParser: true,
+        useUnifiedTopology: true
+      }
     );
     console.log('Connect Successfully !!!');
   } catch (error) {

@@ -1,6 +1,6 @@
 <div class="mt-4">
-    <h3>Khoa hoc cua toi</h3>
-    <a href="/me/trash/courses">Thung rac</a>
+    <a href="/me/stored/courses">Danh sach khoa hoc</a>
+    <h3>Khoa hoc da xoa</h3>
 
     <table class="table mt-4">
         <thead>
@@ -21,17 +21,16 @@
                 <td>{{this.description}}</td>
                 <td>{{this.createdAt}}</td>
                 <td>
-                    <a href="/courses/{{this._id}}/edit" class="btn btn-link">Sua</a>
+                    <a href="" class="btn btn-link btn-restore" data-id="{{this._id}}">Khoi phuc</a>
                     <Xoa href="" class="btn btn-link" data-bs-toggle="modal" data-id="{{this._id}}"
-                        data-bs-target="#delete-course-modal">Xoa</a>
+                        data-bs-target="#delete-course-modal">Xoa vinh vien</a>
                 </td>
             </tr>
 
             {{else}}
             <tr>
                 <td colspan="5" class="text-center">
-                    Ban chua dang khoa hoc nao.
-                    <a href="/courses/create">Dang khoa hoc</a>
+                    Danh sach trong.
                 </td>
             </tr>
             {{/each}}
@@ -48,30 +47,48 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <p>Ban chac chan muon xoa khoa hoc nay?</p>
+                <p>Hanh dong nay se khong the khoi phuc. Ban van muon tiep tuc?</p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Huy</button>
-                <button id="btn-delete-course" type="button" class="btn btn-danger">Xoa bo</button>
+                <button id="btn-delete-course" type="button" class="btn btn-danger">Xoa vinh vien</button>
             </div>
         </div>
     </div>
 </div>
 
-{{!-- Delete hidden form --}}
 <form name="delete-course-form" method="POST"></form>
+<form name="restore-course-form" method="POST"></form>
 
+{{!-- them jQuery --}}
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script>
-    var deleteCourseModal = document.getElementById('delete-course-modal');
-    deleteCourseModal.addEventListener('show.bs.modal', function (event) { 
-        var button = event.relatedTarget
-        var courseId = button.getAttribute('data-id')
+    document.addEventListener('DOMContentLoaded', function() {
+        var courseId
         var deleteForm = document.forms['delete-course-form']
-        var btnDeleteCourse = document.getElementById('btn-delete-course');
+        var restoreForm = document.forms['restore-course-form']
+        var btnDeleteCourse = document.getElementById('btn-delete-course')
+        var restoreBtn = $('.btn-restore')
 
-        btnDeleteCourse.onclick = () => {
-            deleteForm.action = '/courses/' + courseId + '?_method=delete'
+
+        $('#delete-course-modal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget)
+            var id = button.data('id')
+        })
+
+        btnDeleteCourse.onclick = function() {
+            var courseId = $(this).data('id')
+            deleteForm.action = '/courses/' + courseId + '/force?_method=DELETE'
             deleteForm.submit()
         }
+
+        // restore btn click
+        restoreBtn.click(function(e) {
+            e.preventDefault()
+            var courseId = $(this).data('id')
+            restoreForm.action = '/courses/' + courseId + '/restore?_method=patch'
+            restoreForm.submit()    
+        })
     })
+
 </script>
